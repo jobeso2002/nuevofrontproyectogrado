@@ -3,7 +3,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Navigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import liga from "@/assets/liga.jpg";
 import { useAuthStore } from "@/store/authstore";
 import { useForm } from "@/components/hooks/useform";
@@ -13,7 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 
 function Registro() {
-  const { register, isAuthenticated, loading, error } = useAuthStore();
+  const { register,  loading, error } = useAuthStore();
+  const navigate = useNavigate();
   const { form, handleChange } = useForm({
     username: "",
     email: "",
@@ -22,7 +23,7 @@ function Registro() {
   });
 
   const { ConsultRole, roles } = RolesStore();
-  
+
   useEffect(() => {
     if (roles.length === 0) {
       ConsultRole();
@@ -33,20 +34,30 @@ function Registro() {
     e.preventDefault();
     try {
       await register(form);
+      if (!error) {
+        // Muestra éxito y redirige a login
+        navigate("/login", {
+          state: { email: form.email } // Pasa el email para prefilling
+        });
+      }
     } catch (error) {
       console.error("Error en el registro:", error);
     }
   };
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" />;
-  }
+  
+
+  
 
   return (
     <div className="min-h-screen flex justify-center bg-green-300 px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
         <div className="flex flex-col items-center mb-6">
-          <img src={liga} alt="Logo" className="w-16 h-16 object-contain mb-4" />
+          <img
+            src={liga}
+            alt="Logo"
+            className="w-16 h-16 object-contain mb-4"
+          />
           <h1 className="text-3xl font-bold text-green-800">REGISTRAR</h1>
         </div>
 
@@ -58,10 +69,14 @@ function Registro() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
               Nombre de usuario
             </Label>
             <Input
+              id="username"
               type="text"
               name="username"
               onChange={handleChange}
@@ -73,10 +88,14 @@ function Registro() {
           </div>
 
           <div>
-            <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Correo Electrónico
             </Label>
             <Input
+              id="email"
               type="email"
               name="email"
               onChange={handleChange}
@@ -87,10 +106,14 @@ function Registro() {
           </div>
 
           <div>
-            <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Contraseña
             </Label>
             <Input
+              id="password"
               type="password"
               name="password"
               onChange={handleChange}
@@ -102,10 +125,14 @@ function Registro() {
           </div>
 
           <div>
-            <Label htmlFor="id_rol" className="block text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="id_rol"
+              className="block text-sm font-medium text-gray-700"
+            >
               Rol
             </Label>
             <select
+              id="id_rol"
               name="id_rol"
               onChange={handleChange}
               required
@@ -128,7 +155,7 @@ function Registro() {
             {loading ? "Registrando..." : "Registrar"}
           </Button>
         </form>
-        
+
         <p className="text-center text-sm text-gray-700 mt-4">
           ¿Ya tienes cuenta?{" "}
           <Link to="/login" className="text-green-600 hover:underline">

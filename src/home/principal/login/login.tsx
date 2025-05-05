@@ -11,13 +11,12 @@ import { useForm } from '@/components/hooks/useform';
 import { useEffect } from 'react';
 
 function Login() {
-  const { login, error, loading, isAuthenticated } = useAuthStore();
+  const { login, error, loading,  isAuthenticated} = useAuthStore();
+  const navigate = useNavigate(); 
   const { form, handleChange } = useForm({
     email: "",
     password: "",
   });
-
-  const navigate = useNavigate(); 
 
   // Efecto para redirigir cuando la autenticación cambia
   useEffect(() => {
@@ -26,10 +25,13 @@ function Login() {
     }
   }, [isAuthenticated, navigate]);
 
+  // Efecto para redirigir cuando la autenticación cambia
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await login(form);
+      
       navigate("/dasboard");
     } catch (error) {
       console.error("Error en el login:", error);

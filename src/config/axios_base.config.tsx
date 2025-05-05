@@ -1,6 +1,6 @@
 // src/config/axios_base.config.ts
 
-import { decryptData } from "@/store/decrypt/decryptData";
+import { decryptData } from "@/store/decrypt/decryptData"; 
 import axios from "axios";
 
 // Asegúrate de que esta URL coincida con tu backend (puerto 4001 según tu código)
@@ -31,7 +31,7 @@ Api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-  
+
 Api.interceptors.response.use(
   function (response) {
     return response;
@@ -40,3 +40,18 @@ Api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Api.interceptors.request.use(
+//   function (config) {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       // Solo agregar el token si parece un JWT válido
+//       if (token.split('.').length === 3) {
+//         config.headers["Authorization"] = `Bearer ${token}`;
+//       }
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+  
