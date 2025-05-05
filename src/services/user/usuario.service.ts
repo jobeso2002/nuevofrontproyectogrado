@@ -12,6 +12,11 @@ export const ConsultarUsuario = () => {
   return Api.get("/usuario");
 };
 
+// export const registerService = async (data: RegisterData) => {
+//   const response = await Api.post<AuthResponse>("/auth/register", data);
+//   return response.data;
+// };
+
 // export const ConsultarUsuarioId = (id: number) => {
 //   return Api.get(`/usuario/buscar/${id}`);
 // };

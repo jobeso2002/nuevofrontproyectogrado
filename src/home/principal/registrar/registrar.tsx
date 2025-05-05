@@ -11,9 +11,11 @@ import { RolesStore } from "@/store/role/role";
 import { useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
+import { useUserStore } from "@/store/usuario/user";
 
 function Registro() {
-  const { register,  loading, error } = useAuthStore();
+  const { crear_persona } = useUserStore();
+  const { loading, error } = useAuthStore();
   const navigate = useNavigate();
   const { form, handleChange } = useForm({
     username: "",
@@ -33,7 +35,7 @@ function Registro() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await register(form);
+      await crear_persona(form);
       if (!error) {
         // Muestra éxito y redirige a login
         navigate("/login", {

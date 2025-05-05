@@ -34,7 +34,7 @@ export const useUserStore = create<UserProp>((set) => ({
   crear_persona: async (data: RegisterData) => {
     try {
       const response = await registrarusuario(data);
-      console.log("Respuesta del servidor:", response);
+      console.log("Respuesta del servidor usuario registrado:", response);
       
       // Si el backend devuelve un token después del registro
       if (response.token) {

@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { decryptData, encryptData } from "./decrypt/decryptData";
 import { jwtDecode } from 'jwt-decode';
-import { loginService, registerService } from "@/services/auth/auth.service";
+import { loginService,  } from "@/services/auth/auth.service";
 
 interface AuthState {
   user: { 
@@ -20,7 +20,6 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   login: (data: { email: string; password: string }) => Promise<void>;
-  register: (data: { username: string; email: string; password: string; id_rol: number }) => Promise<void>;
   logout: () => void;
   initializeAuth: () => void;
 }
@@ -39,6 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (storedToken && storedUser) {
       try {
         const decryptedToken = decryptData(storedToken);
+        console.log(decryptedToken)
         const decryptedUser = decryptData(storedUser);
 
         set({
@@ -63,8 +63,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await loginService(data);
       const token = response.token;
       
-      // Decodificar el token para obtener la información del usuario
-      const decoded = jwtDecode<{
+      console.log("Token recibido:", token); // Verifica que el token sea válido
+      
+      // Decodificar el token para verificar que es válido
+      const decoded = jwtDecode(token); // Sin tipo primero para verificar
+      
+      console.log("Token decodificado:", decoded);
+      
+      // Ahora sí con tipo
+      const typedDecoded = jwtDecode<{
         id: number;
         email: string;
         username: string;
@@ -73,19 +80,26 @@ export const useAuthStore = create<AuthState>((set) => ({
           name: string;
         };
       }>(token);
-
-      // Encriptar y guardar en localStorage
-      localStorage.setItem("token", encryptData(token));
-      localStorage.setItem("user", encryptData(decoded));
-
+  
+      // Verificar que el token no fue modificado por la encriptación
+      const encryptedToken = encryptData(token);
+      const decryptedToken = decryptData(encryptedToken);
+      
+      console.log("Token original vs decriptado:", token === decryptedToken); // Debe ser true
+  
+      // Guardar en localStorage
+      localStorage.setItem("token", encryptedToken);
+      localStorage.setItem("user", encryptData(typedDecoded));
+  
       set({
-        user: decoded,
+        user: typedDecoded,
         token,
         isAuthenticated: true,
         error: null,
         loading: false,
       });
     } catch (error: any) {
+      console.error("Detalles del error:", error.response?.data);
       set({
         error: error.response?.data?.message || "Credenciales inválidas",
         isAuthenticated: false,
@@ -94,43 +108,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw error;
     }
   },
-
-  register: async (data) => {
-    set({ loading: true, error: null });
-    try {
-      const response = await registerService(data);
-      const token = response.token;
-      
-      const decoded = jwtDecode<{
-        id: number;
-        email: string;
-        username: string;
-        role: {
-          id: number;
-          name: string;
-        };
-      }>(token);
-
-      localStorage.setItem("token", encryptData(token));
-      localStorage.setItem("user", encryptData(decoded));
-
-      set({
-        user: decoded,
-        token,
-        isAuthenticated: false,
-        error: null,
-        loading: false,
-      });
-    } catch (error: any) {
-      set({
-        error: error.response?.data?.message || "Error en el registro",
-        isAuthenticated: false,
-        loading: false,
-      });
-      throw error;
-    }
-  },
-
+  
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
