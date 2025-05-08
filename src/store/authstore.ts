@@ -2,18 +2,18 @@
 
 import { create } from "zustand";
 import { decryptData, encryptData } from "./decrypt/decryptData";
-import { jwtDecode } from 'jwt-decode';
-import { loginService,  } from "@/services/auth/auth.service";
+import { jwtDecode } from "jwt-decode";
+import { loginService } from "@/services/auth/auth.service";
 
 interface AuthState {
-  user: { 
+  user: {
     id: number;
-    email: string; 
+    email: string;
     username: string;
     role: {
       id: number;
       name: string;
-    }; 
+    };
   } | null;
   token: string | null;
   error: string | null;
@@ -31,34 +31,46 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   loading: true,
 
-  initializeAuth: () => { 
+  initializeAuth: () => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-
-    if (storedToken && storedUser) {
-      try {
-        const decryptedToken = decryptData(storedToken);
-        console.log(decryptedToken)
-        const decryptedUser = decryptData(storedUser);
-// Verifica que el token no esté expirado
-const decoded = jwtDecode(decryptedToken);
-if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-  throw new Error("Token expirado");
-}
-
-        set({
-          user: decryptedUser,
-          token: decryptedToken,
-          isAuthenticated: true,
-          error: null,
-          loading: false,
-        });
-      } catch (error) {
-        console.error("Error al desencriptar los datos:", error);
-        set({ loading: false });
+  
+    if (!storedToken || !storedUser) {
+      return set({ loading: false });
+    }
+  
+    try {
+      // Desencriptar token
+      const token = storedToken.includes('.') ? storedToken : decryptData(storedToken);
+      if (!token) throw new Error("Token inválido");
+  
+      // Verificar expiración
+      const decoded = jwtDecode(token) as { exp?: number };
+      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+        throw new Error("Token expirado");
       }
-    } else {
-      set({ loading: false });
+  
+      // Desencriptar usuario
+      const user = decryptData(storedUser);
+      if (!user) throw new Error("Datos de usuario inválidos");
+  
+      set({
+        user,
+        token,
+        isAuthenticated: true,
+        error: null,
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error al inicializar auth:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      set({ 
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        loading: false 
+      });
     }
   },
 
@@ -67,37 +79,28 @@ if (decoded.exp && decoded.exp * 1000 < Date.now()) {
     try {
       const response = await loginService(data);
       const token = response.token;
-      
-      console.log("Token recibido:", token); // Verifica que el token sea válido
-      
-      // Decodificar el token para verificar que es válido
-      const decoded = jwtDecode(token); // Sin tipo primero para verificar
-      
-      console.log("Token decodificado:", decoded);
-      
-      // Ahora sí con tipo
-      const typedDecoded = jwtDecode<{
+
+      // Decodificar para verificar
+      const decoded = jwtDecode<{
         id: number;
         email: string;
         username: string;
-        role: {
-          id: number;
-          name: string;
-        };
+        role: { id: number; name: string };
+        exp: number;
       }>(token);
-  
-      // Verificar que el token no fue modificado por la encriptación
-      const encryptedToken = encryptData(token);
-      const decryptedToken = decryptData(encryptedToken);
-      
-      console.log("Token original vs decriptado:", token === decryptedToken); // Debe ser true
-  
-      // Guardar en localStorage
-      localStorage.setItem("token", encryptedToken);
-      localStorage.setItem("user", encryptData(typedDecoded));
-  
+
+      // Verificar expiración
+      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+        throw new Error("Token expirado");
+      }
+
+      // Guardar en localStorage (encriptar solo si no es producción)
+      const shouldEncrypt = import.meta.env.NODE_ENV !== "production";
+      localStorage.setItem("token", shouldEncrypt ? encryptData(token) : token);
+      localStorage.setItem("user", encryptData(decoded));
+
       set({
-        user: typedDecoded,
+        user: decoded,
         token,
         isAuthenticated: true,
         error: null,
@@ -113,7 +116,7 @@ if (decoded.exp && decoded.exp * 1000 < Date.now()) {
       throw error;
     }
   },
-  
+
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");

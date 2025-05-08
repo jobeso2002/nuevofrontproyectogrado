@@ -17,11 +17,10 @@ export const Api = axios.create({
 Api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
-    try {
-      const decryptedToken = decryptData(token);
-      config.headers.Authorization = `Bearer ${decryptedToken}`;
-    } catch (error) {
-      console.error("Error al desencriptar token:", error);
+    // Solo desencripta si no parece un JWT (no contiene puntos)
+    const authToken = token.includes('.') ? token : decryptData(token);
+    if (authToken) {
+      config.headers.Authorization = `Bearer ${authToken}`;
     }
   }
   return config;
@@ -40,17 +39,3 @@ Api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-// Api.interceptors.request.use(
-//   function (config) {
-//     const token = localStorage.getItem("token");
-//     if (token) {
-//       // Solo agregar el token si parece un JWT válido
-//       if (token.split('.').length === 3) {
-//         config.headers["Authorization"] = `Bearer ${token}`;
-//       }
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-  

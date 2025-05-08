@@ -1,12 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-
 function RegDeportista() {
-  
-
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Registrar Deportista</h1>
@@ -46,7 +42,6 @@ function RegDeportista() {
           <select
             id="tipo_documento"
             name="tipo_documento"
-            
             className="border p-2 rounded"
           >
             <option value="">Tipo de Documento</option>
@@ -64,33 +59,7 @@ function RegDeportista() {
             type="text"
             id="id_persona"
             name="id_persona"
-        
             className="border border-gray-300 p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="lugar_exp_doc" className="block mb-2 font-semibold">
-            Lugar Expedición:
-          </label>
-          <input
-            type="text"
-            id="lugar_exp_doc"
-            name="lugar_exp_doc"
-          
-            className="border border-gray-300 p-2 rounded w-full"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <Label htmlFor="fecha_exp_doc" className="text-black text-sm">
-            Fecha de Expedición
-          </Label>
-          <Input
-            type="date"
-            name="fecha_exp_doc"
-           
-            className="border p-2 rounded"
           />
         </div>
 
@@ -101,7 +70,6 @@ function RegDeportista() {
           <Input
             type="date"
             name="fecha_nacimiento"
-            
             className="border p-2 rounded"
           />
         </div>
@@ -114,7 +82,6 @@ function RegDeportista() {
             type="text"
             id="primer_nombre"
             name="primer_nombre"
-           
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
@@ -127,7 +94,6 @@ function RegDeportista() {
             type="text"
             id="segundo_nombre"
             name="segundo_nombre"
-           
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
@@ -140,56 +106,45 @@ function RegDeportista() {
             type="text"
             id="primer_apellido"
             name="primer_apellido"
-           
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
         <div>
-          <label htmlFor="segundo_apellido" className="block mb-2 font-semibold">
+          <label
+            htmlFor="segundo_apellido"
+            className="block mb-2 font-semibold"
+          >
             Segundo Apellido:
           </label>
           <input
             type="text"
             id="segundo_apellido"
             name="segundo_apellido"
-           
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
         <div>
-          <Label htmlFor="tipo_sangre" className="block mb-2 font-semibold">
-            Tipo de Sangre:
-          </Label>
-          <select
-            id="tipo_sangre"
-            name="tipo_sangre"
-         
-            className="border p-2 rounded"
+          <label
+            htmlFor="telefono"
+            className="block mb-2 font-semibold"
           >
-            <option value="">Seleccione Tipo de Sangre</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
+            Telefono:
+          </label>
+          <input
+            type="text"
+            id="telefono"
+            name="telefono"
+            className="border border-gray-300 p-2 rounded w-full"
+          />
         </div>
 
         <div>
           <Label htmlFor="sexo" className="block mb-2 font-semibold">
             Genero:
           </Label>
-          <select
-            id="sexo"
-            name="sexo"
-         
-            className="border p-2 rounded"
-          >
+          <select id="sexo" name="sexo" className="border p-2 rounded">
             <option value="">Seleccione Sexo</option>
             <option value="Masculino">Masculino</option>
             <option value="Femenino">Femenino</option>
@@ -205,7 +160,6 @@ function RegDeportista() {
             type="email"
             id="email"
             name="email"
-         
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
@@ -219,7 +173,6 @@ function RegDeportista() {
             type="text"
             id="estatura"
             name="estatura"
-          
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
@@ -232,7 +185,6 @@ function RegDeportista() {
             type="text"
             id="peso"
             name="peso"
-         
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
@@ -243,7 +195,6 @@ function RegDeportista() {
           </label>
           <select
             name="estado"
-       
             className="border border-gray-300 p-2 rounded w-full"
           >
             <option value="">Estado Afiliacion</option>
@@ -260,7 +211,6 @@ function RegDeportista() {
             type="text"
             id="numero_camisa"
             name="numero_camisa"
-           
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
@@ -273,7 +223,6 @@ function RegDeportista() {
             type="text"
             id="posicion"
             name="posicion"
-           
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
@@ -284,15 +233,11 @@ function RegDeportista() {
           </label>
           <select
             name="id_club"
-          
             className="border border-gray-300 p-2 rounded w-full"
           >
             <option value="">Seleccione Club</option>
-          
           </select>
         </div>
-
-       
 
         <div className="col-span-4 flex justify-center">
           <Button className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300">
