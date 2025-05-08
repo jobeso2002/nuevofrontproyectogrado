@@ -1,5 +1,4 @@
-// src/config/axios_base.config.ts
-
+import { useAuthStore } from "@/store/authstore";
 import { decryptData } from "@/store/decrypt/decryptData"; 
 import axios from "axios";
 
@@ -13,34 +12,34 @@ export const Api = axios.create({
     "Content-Type": "application/json",
   },
 });
-   
-Api.interceptors.request.use(
-  function (config) {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decryptedToken = decryptData(token);
-        config.headers["Authorization"] = `Bearer ${decryptedToken}`;
-      } catch (error) {
-        console.error("Error al desencriptar el token:", error);
-      }
+
+// Interceptor para añadir el token
+Api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const decryptedToken = decryptData(token);
+      config.headers.Authorization = `Bearer ${decryptedToken}`;
+    } catch (error) {
+      console.error("Error al desencriptar token:", error);
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
   }
-);
+  return config;
+});
 
+
+// Interceptor para manejar errores
 Api.interceptors.response.use(
-  function (response) {
-    return response;
-  },
-  function (error) {
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token inválido o expirado
+      useAuthStore.getState().logout();
+      window.location.href = "/registrar";
+    }
     return Promise.reject(error);
   }
 );
-
 // Api.interceptors.request.use(
 //   function (config) {
 //     const token = localStorage.getItem("token");

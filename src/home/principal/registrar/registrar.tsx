@@ -47,10 +47,6 @@ function Registro() {
     }
   };
 
-  
-
-  
-
   return (
     <div className="min-h-screen flex justify-center bg-green-300 px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">

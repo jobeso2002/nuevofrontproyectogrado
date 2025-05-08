@@ -31,7 +31,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   loading: true,
 
-  initializeAuth: () => {
+  initializeAuth: () => { 
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
@@ -40,6 +40,11 @@ export const useAuthStore = create<AuthState>((set) => ({
         const decryptedToken = decryptData(storedToken);
         console.log(decryptedToken)
         const decryptedUser = decryptData(storedUser);
+// Verifica que el token no esté expirado
+const decoded = jwtDecode(decryptedToken);
+if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+  throw new Error("Token expirado");
+}
 
         set({
           user: decryptedUser,
