@@ -1,12 +1,78 @@
+import { useForm } from "@/components/hooks/useform";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDeportistaStore } from "@/store/deportista/deportista";
 
 function RegDeportista() {
+  const { crear_deportista } = useDeportistaStore();
+  const { form, handleChange } = useForm({
+    documentoIdentidad: "",
+    tipoDocumento: "",
+    primer_nombre: "",
+    segundo_nombre: "",
+    primer_apellido: "",
+    segundo_apellido: "",
+    fechaNacimiento: "",
+    genero: "",
+    foto: "",
+    telefono: "",
+    email: "",
+    direccion: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Validar campos obligatorios
+    if (
+      !form.documentoIdentidad ||
+      !form.tipoDocumento ||
+      !form.primer_nombre ||
+      !form.primer_apellido ||
+      !form.fechaNacimiento ||
+      !form.genero
+    ) {
+      alert("Por favor complete todos los campos obligatorios");
+      return;
+    }
+
+    // Mapear valores al formato que espera el backend
+    const deportistaData = {
+      documentoIdentidad: form.documentoIdentidad,
+      tipoDocumento: form.tipoDocumento.toLowerCase().includes("cedula")
+        ? "cedula"
+        : form.tipoDocumento.toLowerCase().includes("tarjeta")
+        ? "tarjeta_identidad"
+        : "pasaporte",
+      primer_nombre: form.primer_nombre,
+      segundo_nombre: form.segundo_nombre, // Permitir nulo si es opcional
+      primer_apellido: form.primer_apellido,
+      segundo_apellido: form.segundo_apellido,
+      fechaNacimiento: form.fechaNacimiento, // Enviar como string (YYYY-MM-DD)
+      genero: form.genero.toLowerCase(), // Asegurar minúsculas
+      foto: form.foto || "default.jpg", // Valor por defecto si no se proporciona
+      telefono: form.telefono,
+      email: form.email,
+      direccion: form.direccion,
+    };
+
+    try {
+      console.log("Datos a enviar:", deportistaData);
+      await crear_deportista(deportistaData);
+      console.log("Registro exitoso");
+    } catch (error) {
+      console.error("Error en el registro:", error);
+      alert(
+        "Error al registrar deportista. Verifique la consola para más detalles."
+      );
+    }
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Registrar Deportista</h1>
-      <form className="grid grid-cols-4 gap-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-4 gap-6">
         {/* <div className="col-span-1 flex flex-col items-center">
           {selectedImage ? (
             <img
@@ -36,13 +102,14 @@ function RegDeportista() {
         </div> */}
 
         <div>
-          <Label htmlFor="tipo_documento" className="block mb-2 font-semibold">
+          <Label htmlFor="tipoDocumento" className="block mb-2 font-semibold">
             Tipo de Documento:
           </Label>
           <select
-            id="tipo_documento"
-            name="tipo_documento"
+            id="tipoDocumento"
+            name="tipoDocumento"
             className="border p-2 rounded"
+            onChange={handleChange}
           >
             <option value="">Tipo de Documento</option>
             <option value="Tarjeta Identidad">Tarjeta Identidad</option>
@@ -52,25 +119,31 @@ function RegDeportista() {
         </div>
 
         <div>
-          <label htmlFor="id_persona" className="block mb-2 font-semibold">
+          <label
+            htmlFor="documentoIdentidad"
+            className="block mb-2 font-semibold"
+          >
             Número Documento:
           </label>
           <input
+            id="documentoIdentidad"
             type="text"
-            id="id_persona"
-            name="id_persona"
+            name="documentoIdentidad"
             className="border border-gray-300 p-2 rounded w-full"
+            onChange={handleChange}
           />
         </div>
 
         <div className="flex flex-col">
-          <Label htmlFor="fecha_nacimiento" className="text-black text-sm">
+          <Label htmlFor="fechaNacimiento" className="text-black text-sm">
             Fecha Nacimiento:
           </Label>
           <Input
+            id="fechaNacimiento"
             type="date"
-            name="fecha_nacimiento"
+            name="fechaNacimiento"
             className="border p-2 rounded"
+            onChange={handleChange}
           />
         </div>
 
@@ -79,10 +152,11 @@ function RegDeportista() {
             Primer Nombre:
           </label>
           <input
-            type="text"
             id="primer_nombre"
+            type="text"
             name="primer_nombre"
             className="border border-gray-300 p-2 rounded w-full"
+            onChange={handleChange}
           />
         </div>
 
@@ -91,10 +165,11 @@ function RegDeportista() {
             Segundo Nombre:
           </label>
           <input
-            type="text"
             id="segundo_nombre"
+            type="text"
             name="segundo_nombre"
             className="border border-gray-300 p-2 rounded w-full"
+            onChange={handleChange}
           />
         </div>
 
@@ -103,10 +178,11 @@ function RegDeportista() {
             Primer Apellido:
           </label>
           <input
-            type="text"
             id="primer_apellido"
+            type="text"
             name="primer_apellido"
             className="border border-gray-300 p-2 rounded w-full"
+            onChange={handleChange}
           />
         </div>
 
@@ -118,37 +194,65 @@ function RegDeportista() {
             Segundo Apellido:
           </label>
           <input
-            type="text"
             id="segundo_apellido"
+            type="text"
             name="segundo_apellido"
             className="border border-gray-300 p-2 rounded w-full"
+            onChange={handleChange}
           />
         </div>
 
         <div>
-          <label
-            htmlFor="telefono"
-            className="block mb-2 font-semibold"
-          >
+          <label htmlFor="foto" className="block mb-2 font-semibold">
+            foto:
+          </label>
+          <input
+            id="foto"
+            type="text"
+            name="foto"
+            className="border border-gray-300 p-2 rounded w-full"
+            onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="telefono" className="block mb-2 font-semibold">
             Telefono:
           </label>
           <input
-            type="text"
             id="telefono"
+            type="text"
             name="telefono"
             className="border border-gray-300 p-2 rounded w-full"
           />
         </div>
 
         <div>
-          <Label htmlFor="sexo" className="block mb-2 font-semibold">
+          <label htmlFor="direccion" className="block mb-2 font-semibold">
+            direccion:
+          </label>
+          <input
+            id="direccion"
+            type="text"
+            name="direccion"
+            className="border border-gray-300 p-2 rounded w-full"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="genero" className="block mb-2 font-semibold">
             Genero:
           </Label>
-          <select id="sexo" name="sexo" className="border p-2 rounded">
-            <option value="">Seleccione Sexo</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
+          <select
+            id="genero"
+            name="genero"
+            className="border p-2 rounded"
+            onChange={handleChange}
+          >
+            <option value="">Seleccione genero</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
           </select>
         </div>
 
@@ -157,86 +261,12 @@ function RegDeportista() {
             Correo Electrónico:
           </label>
           <input
-            type="email"
             id="email"
+            type="email"
             name="email"
             className="border border-gray-300 p-2 rounded w-full"
+            onChange={handleChange}
           />
-        </div>
-
-        {/* Datos de deportista */}
-        <div>
-          <label htmlFor="estatura" className="block mb-2 font-semibold">
-            Estatura (cm):
-          </label>
-          <input
-            type="text"
-            id="estatura"
-            name="estatura"
-            className="border border-gray-300 p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="peso" className="block mb-2 font-semibold">
-            Peso (kg):
-          </label>
-          <input
-            type="text"
-            id="peso"
-            name="peso"
-            className="border border-gray-300 p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="estado" className="block mb-2 font-semibold">
-            Estado:
-          </label>
-          <select
-            name="estado"
-            className="border border-gray-300 p-2 rounded w-full"
-          >
-            <option value="">Estado Afiliacion</option>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="numero_camisa" className="block mb-2 font-semibold">
-            Número Camisa:
-          </label>
-          <input
-            type="text"
-            id="numero_camisa"
-            name="numero_camisa"
-            className="border border-gray-300 p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="posicion" className="block mb-2 font-semibold">
-            Posición:
-          </label>
-          <input
-            type="text"
-            id="posicion"
-            name="posicion"
-            className="border border-gray-300 p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="club" className="block mb-2 font-semibold">
-            Club:
-          </label>
-          <select
-            name="id_club"
-            className="border border-gray-300 p-2 rounded w-full"
-          >
-            <option value="">Seleccione Club</option>
-          </select>
         </div>
 
         <div className="col-span-4 flex justify-center">

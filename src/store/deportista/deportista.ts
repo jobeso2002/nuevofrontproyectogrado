@@ -27,23 +27,26 @@ export const useDeportistaStore = create<DeportistaProp>((set) => ({
     try {
       const response = await ConsultarDeportistas();
       const consultar: Deportista[] = response.data;
-      set({deportistas:consultar}); // Asegurarse de que persona recibe un array válido
+      set({ deportistas: consultar }); // Asegurarse de que persona recibe un array válido
     } catch (error) {
       console.error("Error al consultar deportista:", error);
     }
   },
 
- 
-
+  // deportista.store.ts
   crear_deportista: async (data: CreateDeportista) => {
     try {
       const response = await CreateDeportistas(data);
-      console.log("Deportista creado:", response.data);
+      console.log("Respuesta completa del servidor:", response);
+
+      // Actualizar lista de deportistas
       const newResponse = await ConsultarDeportistas();
-      set({ deportistas: newResponse.data }); // Actualiza la lista de deportistas después de crear uno nuevo
+      set({ deportistas: newResponse.data });
+
+      return response; // Devolver respuesta para manejo en el componente
     } catch (error) {
-      console.error("Error al crear deportista:", error);
+      console.error("Error completo en store:", error);
+      throw error; // Propagar el error
     }
   },
-
 }));

@@ -2,17 +2,22 @@ import { Api } from "@/config/axios_base.config";
 import { CreateDeportista } from "@/interface/deportista/deportista.interface";
 
 
-export const CreateDeportistas = (data: CreateDeportista) => {
-    return Api.post("/deportista", data);
+// deportista.service.ts
+export const CreateDeportistas = async (data: CreateDeportista) => {
+  try {
+    const response = await Api.post("/deportista", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear deportista:", error);
+    throw error; // Re-lanzar el error para manejo en el store
+  }
 };
   
 export const ConsultarDeportistas = () => {
   return Api.get("/deportista");
 };
 
-export const VerificareExisteDeportista = (numero_documento: string) => {
-  return Api.get(`/deportista/verificar/${numero_documento}`);
-};
+
 
 
 
